@@ -321,8 +321,8 @@ Panel {
       value: m.id,
       label: m.name + (live ? "" : " (offline)")
     };
-  }).sort(function (a, b) {
-    return Number(b.label.indexOf("(offline)") < 0) - Number(a.label.indexOf("(offline)") < 0);
+  }).filter(function (o) {
+    return o.label.indexOf("(offline)") < 0;
   }).concat(hasLights ? [
     {
       value: "lights",
