@@ -103,7 +103,30 @@ backup locations are in **User files** below. Setup does not record previous
 package/service/rule state or roll back partially completed changes on failure;
 review the terminal output and package-manager history before retrying or cleanup.
 
-## Install
+## Install (borferkic fork)
+
+This fork adds a theme-aware bar icon (it follows the Omarchy theme color) and
+hides offline devices in the device picker. To install it instead of upstream:
+
+```bash
+omarchy plugin add https://github.com/borferkic/omarchy-elgato.git --enable
+```
+
+Everything below (placement prompt, system setup, runtime install, update,
+removal) works the same. Update with:
+
+```bash
+omarchy plugin update dxun-dev.omarchy-elgato
+```
+
+If upstream is already installed, remove it first so the plugin id does not
+clash:
+
+```bash
+omarchy plugin remove dxun-dev.omarchy-elgato
+```
+
+## Install (upstream)
 
 Install and enable through Omarchy. This is the complete end-user installation
 command; no manual clone, build, npm command, or separate setup command is needed:
