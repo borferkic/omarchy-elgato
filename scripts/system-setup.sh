@@ -25,7 +25,6 @@ magick imagemagick
 fc-match fontconfig
 avahi-browse avahi
 wpctl wireplumber
-wtype wtype
 uwsm-app uwsm
 gtk-launch gtk3
 xdg-open xdg-utils

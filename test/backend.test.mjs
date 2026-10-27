@@ -100,7 +100,12 @@ test('Classic and Plus have separate valid profiles, malformed profiles fail', (
   }
 });
 test('action commands use argument arrays, unknown and malicious actions fail', async () => {
-  assert.deepEqual(commandFor('key_enter'), ['wtype', '-k', 'Return']);
+  const key = commandFor('key_enter');
+  assert.equal(key[0], 'sh');
+  assert.deepEqual(key.slice(4), [
+    'sendshortcut , Return,',
+    'hl.dsp.send_shortcut({ mods = "", key = "Return" })',
+  ]);
   assert.equal(commandFor('app:../../evil'), null);
   assert.equal(await validAction('$(touch /tmp/elgato-test)'), false);
   assert.equal(commandFor('unknown'), null);

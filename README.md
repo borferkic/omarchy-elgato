@@ -34,7 +34,6 @@ are reused. The complete set the script can request is:
 | `ttf-dejavu` | Font fallback when the selected font file is unavailable. |
 | `avahi` | `avahi-browse` discovers network Key Lights. |
 | `wireplumber` | `wpctl` controls audio volume and mute. |
-| `wtype` | Sends keyboard input for actions. |
 | `uwsm` | `uwsm-app` launches applications in the desktop session. |
 | `gtk3` | `gtk-launch` launches desktop entries. |
 | `xdg-utils` | `xdg-open` opens files and URLs. |

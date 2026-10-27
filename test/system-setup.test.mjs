@@ -76,7 +76,7 @@ echo "$*" > "$TEST_DIR/packages"
 for package in "$@"; do
  case $package in
  nodejs) commands=node;; npm) commands=npm;; imagemagick) commands=magick;; fontconfig) commands=fc-match;;
- avahi) commands=avahi-browse;; wireplumber) commands=wpctl;; wtype) commands=wtype;; uwsm) commands=uwsm-app;;
+ avahi) commands=avahi-browse;; wireplumber) commands=wpctl;; uwsm) commands=uwsm-app;;
  gtk3) commands=gtk-launch;; xdg-utils) commands=xdg-open;; ttf-dejavu) continue;; *) exit 1;;
  esac
  for command in $commands; do
@@ -133,7 +133,6 @@ test('confirmation installs missing packages, narrow USB rules, and Avahi, then 
     'imagemagick',
     'avahi',
     'wireplumber',
-    'wtype',
     'uwsm',
     'gtk3',
     'xdg-utils',
