@@ -61,7 +61,7 @@ export async function actionIcon(action) {
     if (!/^[A-Za-z0-9_.+-]+$/.test(icon)) {
         return '';
     }
-    for (const size of ['256x256', '128x128', 'scalable', '64x64', '48x48']) {
+    for (const size of ['512x512', '256x256', '128x128', 'scalable', '64x64', '48x48']) {
         for (const dir of [dataHome, ...dataDirs].map((dir) => join(dir, 'icons/hicolor'))) {
             for (const ext of ['png', 'svg', 'xpm']) {
                 const path = join(dir, size, 'apps', `${icon}.${ext}`);
@@ -71,6 +71,17 @@ export async function actionIcon(action) {
                 }
                 catch { }
             }
+        }
+    }
+    // Some packages ship a single unthemed icon in pixmaps.
+    for (const dir of [dataHome, ...dataDirs].map((dir) => join(dir, 'pixmaps'))) {
+        for (const ext of ['png', 'svg', 'xpm']) {
+            const path = join(dir, `${icon}.${ext}`);
+            try {
+                await stat(path);
+                return path;
+            }
+            catch { }
         }
     }
     return '';
