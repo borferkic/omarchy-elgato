@@ -1118,3 +1118,55 @@ test('dial LCD displays render separate segments and save independent page setti
     await rm(dir, { recursive: true, force: true });
   }
 });
+test('swap-device-key swaps or moves whole key objects on the target page and validates indices', async () => {
+  const tmp = await mkdtemp(join(tmpdir(), 'omarchy-elgato-swap-'));
+  const env = {
+    ...process.env,
+    XDG_CONFIG_HOME: join(tmp, 'config'),
+    XDG_STATE_HOME: join(tmp, 'state'),
+    XDG_CACHE_HOME: join(tmp, 'cache'),
+    PATH: '',
+  };
+  const cli = new URL('../dist/cli.js', import.meta.url).pathname;
+  const command = (...args) =>
+    execFileSync(process.execPath, [cli, ...args], { env, encoding: 'utf8' });
+  const keys = () => JSON.parse(command('profile')).keys;
+  try {
+    command('init');
+    command('set-device-key', 'plus', '1', 'key_enter');
+    command('set-device-icon', 'plus', '1', 'preset:lock.svg');
+    command('set-device-key', 'plus', '2', 'key_tab');
+    const original = keys();
+    command('swap-device-key', 'plus', '1', '2');
+    let swapped = keys();
+    assert.deepEqual(swapped[0], original[1]);
+    assert.deepEqual(swapped[1], original[0]);
+    assert.equal(swapped[1].icon, 'preset:lock.svg');
+    command('set-device-key', 'plus', '6', 'none');
+    const beforeMove = keys();
+    command('swap-device-key', 'plus', '1', '6');
+    const moved = keys();
+    assert.deepEqual(moved[5], beforeMove[0]);
+    assert.equal(moved[0].action, 'none');
+    assert.deepEqual(moved[1], beforeMove[1]);
+    const before = keys();
+    command('swap-device-key', 'plus', '3', '3');
+    assert.deepEqual(keys(), before);
+    assert.throws(() => command('swap-device-key', 'plus', '1', '9'));
+    assert.throws(() => command('swap-device-key', 'plus', '0', '2'));
+    assert.throws(() => command('swap-device-key', 'unknown', '1', '2'));
+    assert.throws(() => command('swap-device-key', 'plus', '1'));
+    assert.deepEqual(keys(), before);
+    const second = JSON.parse(command('page', 'plus', 'duplicate', 'page-1', 'Work')).active;
+    command('swap-device-key', 'plus', '4', '5', '--page', second);
+    assert.deepEqual(keys(), before);
+    const pageKeys = JSON.parse(command('profile')).pages.plus.items[1].keys;
+    assert.deepEqual(pageKeys[3], before[4]);
+    assert.deepEqual(pageKeys[4], before[3]);
+    const folder = JSON.parse(command('folder-create', 'plus', 'page-1', '8', 'Media')).active;
+    assert.throws(() => command('swap-device-key', 'plus', '1', '2', '--page', folder));
+    assert.throws(() => command('swap-device-key', 'plus', '2', '1', '--page', folder));
+  } finally {
+    await rm(tmp, { recursive: true, force: true });
+  }
+});
