@@ -4,9 +4,22 @@ import { extensionAction, executeExtension } from '../extensions.js';
 import { launch } from '../process.js';
 import { keyActions } from './definitions.js';
 import { validAction } from './metadata.js';
+// Hyprland injects the key on the real keyboard. A virtual keyboard (wtype)
+// uploads its own keymap, which XWayland can keep after it exits and break
+// physical input in X11 games. Try the legacy dispatcher, then the Lua one.
+function sendKey(key) {
+    return [
+        'sh',
+        '-c',
+        'hyprctl dispatch "$1" > /dev/null 2>&1 || hyprctl dispatch "$2"',
+        'sh',
+        'sendshortcut , ' + key + ',',
+        'hl.dsp.send_shortcut({ mods = "", key = "' + key + '" })',
+    ];
+}
 export function commandFor(action) {
     if (Object.hasOwn(keyActions, action)) {
-        return ['wtype', '-k', keyActions[action]];
+        return sendKey(keyActions[action]);
     }
     if (action.startsWith('app:') && validID(action.slice(4))) {
         return ['uwsm-app', '--', 'gtk-launch', action.slice(4)];
