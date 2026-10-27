@@ -1,4 +1,4 @@
-import { setControl } from '../actions/mapping.js';
+import { setControl, swapKeys } from '../actions/mapping.js';
 import { profilePath } from '../paths.js';
 import { deckModels } from '../devices/models.js';
 export async function handleMapping({ command, args, pageId }) {
@@ -11,6 +11,15 @@ export async function handleMapping({ command, args, pageId }) {
                 throw new Error('Invalid device mapping arguments');
             }
             await setControl(dial ? 'dials' : 'keys', Number(args[0]) - 1, dial ? args[1] : 'action', dial ? args[2] : args[1], model, pageId);
+            console.log(profilePath);
+            break;
+        }
+        case 'swap-device-key': {
+            const model = args.shift();
+            if (!deckModels.some((m) => m.id === model) || args.length !== 2) {
+                throw new Error('Invalid device swap arguments');
+            }
+            await swapKeys(Number(args[0]) - 1, Number(args[1]) - 1, model, pageId);
             console.log(profilePath);
             break;
         }

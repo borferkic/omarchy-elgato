@@ -392,6 +392,27 @@ Panel {
     keyCatcher.forceActiveFocus();
   }
 
+  // Button drag-and-drop: dropping a tile on another swaps the two keys (a move when the target is empty).
+  property int dragFrom: -1
+  property int dragHover: -1
+
+  function canDragKey(index) {
+    return !saving && !editingControls && !(inFolder && index === 0);
+  }
+
+  function buttonIndexAt(x, y) {
+    var item = buttonCanvas.childAt(x, y);
+    return item && item.controlIndex !== undefined ? item.controlIndex : -1;
+  }
+
+  function swapKeys(from, to) {
+    if (from < 0 || to < 0 || from === to || !canDragKey(from) || !canDragKey(to)) {
+      return;
+    }
+    enqueueSave([helper, "swap-device-key", selectedDevice, String(from + 1), String(to + 1), "--page", activePage]);
+    selectControl("key", to);
+  }
+
   readonly property bool editingControls: pageEditMode !== "" || creatingFolder || buttonTextField.activeFocus || dialTextField.activeFocus || showIconGallery || deviceDropdown.popupOpen || displayModeDropdown.popupOpen || pageDropdown.popupOpen || actionDropdown.popupOpen || pageTargetDropdown.popupOpen
 
   function clearSelectedButton() {
@@ -1339,9 +1360,10 @@ Panel {
                       width: buttonCanvas.cellSize
                       height: width
                       radius: modelData.feedbackType === "rgb" ? width / 2 : 0
-                      color: modelData.feedbackType === "rgb" ? root.colorHex((root.selectedKeys[controlIndex] || {}).color || [40, 90, 130]) : root.selectedControl === "key" && root.selectedIndex === controlIndex ? root.controlFaceRaised : root.controlFace
-                      border.width: root.selectedControl === "key" && root.selectedIndex === controlIndex ? 2 : 1
-                      border.color: root.selectedControl === "key" && root.selectedIndex === controlIndex ? Color.accent : root.controlBorder
+                      color: modelData.feedbackType === "rgb" ? root.colorHex((root.selectedKeys[controlIndex] || {}).color || [40, 90, 130]) : (root.selectedControl === "key" && root.selectedIndex === controlIndex) || root.dragHover === controlIndex ? root.controlFaceRaised : root.controlFace
+                      opacity: root.dragFrom === controlIndex ? 0.35 : 1
+                      border.width: (root.selectedControl === "key" && root.selectedIndex === controlIndex) || root.dragHover === controlIndex ? 2 : 1
+                      border.color: root.dragHover === controlIndex ? Color.foreground : root.selectedControl === "key" && root.selectedIndex === controlIndex ? Color.accent : root.controlBorder
                       Column {
                         anchors.centerIn: parent
                         width: parent.width - Style.space(6)
@@ -1379,10 +1401,54 @@ Panel {
                       Controls.ToolTip.text: "Key " + (controlIndex + 1) + " · " + root.actionName((root.selectedKeys[controlIndex] || {}).action) + (((root.selectedKeys[controlIndex] || {}).action || "").indexOf("folder:") === 0 ? " · Double-click to open" : (root.selectedKeys[controlIndex] || {}).action === "folder_back" ? " · Double-click to go back" : "")
                       MouseArea {
                         id: keyMouse
+                        property point pressPoint
+                        property bool dragActive: false
+                        property bool wasDragged: false
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: root.selectControl("key", controlIndex)
+                        onPressed: function (mouse) {
+                          pressPoint = Qt.point(mouse.x, mouse.y);
+                          dragActive = false;
+                          wasDragged = false;
+                        }
+                        onPositionChanged: function (mouse) {
+                          if (!pressed)
+                            return;
+                          if (!dragActive) {
+                            var distance = Math.hypot(mouse.x - pressPoint.x, mouse.y - pressPoint.y);
+                            if (distance < Qt.styleHints.startDragDistance || !root.canDragKey(controlIndex))
+                              return;
+                            dragActive = true;
+                            root.dragFrom = controlIndex;
+                          }
+                          var canvasPoint = mapToItem(buttonCanvas, mouse.x, mouse.y);
+                          var hover = root.buttonIndexAt(canvasPoint.x, canvasPoint.y);
+                          root.dragHover = hover >= 0 && hover !== root.dragFrom && root.canDragKey(hover) ? hover : -1;
+                          var ghostPoint = mapToItem(dragGhost.parent, mouse.x, mouse.y);
+                          dragGhost.x = ghostPoint.x - dragGhost.width / 2;
+                          dragGhost.y = ghostPoint.y - dragGhost.height / 2;
+                        }
+                        onReleased: function (mouse) {
+                          if (!dragActive)
+                            return;
+                          dragActive = false;
+                          wasDragged = true;
+                          var from = root.dragFrom;
+                          var to = root.dragHover;
+                          root.dragFrom = -1;
+                          root.dragHover = -1;
+                          root.swapKeys(from, to);
+                        }
+                        onCanceled: {
+                          dragActive = false;
+                          root.dragFrom = -1;
+                          root.dragHover = -1;
+                        }
+                        onClicked: {
+                          if (!wasDragged)
+                            root.selectControl("key", controlIndex);
+                        }
                         onDoubleClicked: root.openPreview(controlIndex)
                       }
                     }
@@ -2326,6 +2392,43 @@ Panel {
           font.pixelSize: 11
         }
       }
+    }
+  }
+  // Drag preview for a button tile. Parented to the window host so the scroll view cannot clip it.
+  Rectangle {
+    id: dragGhost
+    parent: root.detached ? detachedHost : popupHost
+    visible: root.dragFrom >= 0
+    z: 1000
+    width: buttonCanvas.cellSize
+    height: width
+    color: root.controlFaceRaised
+    border.width: 2
+    border.color: Color.accent
+    opacity: 0.85
+    Image {
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.top: parent.top
+      anchors.topMargin: Style.space(8)
+      width: Math.min(Style.space(30), parent.width * 0.5)
+      height: width
+      source: root.dragFrom >= 0 ? root.keyIcon(root.selectedKeys[root.dragFrom]) : ""
+      visible: source.toString() !== ""
+      fillMode: Image.PreserveAspectFit
+      smooth: true
+    }
+    Text {
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.bottom: parent.bottom
+      anchors.bottomMargin: Style.space(6)
+      width: parent.width - Style.space(6)
+      horizontalAlignment: Text.AlignHCenter
+      elide: Text.ElideRight
+      text: root.dragFrom >= 0 ? root.actionName((root.selectedKeys[root.dragFrom] || {}).action) : ""
+      textFormat: Text.PlainText
+      color: Color.foreground
+      font.family: Style.font.family
+      font.pixelSize: 9
     }
   }
   // Detached editor window.

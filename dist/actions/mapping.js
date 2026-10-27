@@ -2,6 +2,26 @@ import { deviceMapping, pageSet } from '../profile/mapping.js';
 import { updateProfile } from '../profile/store.js';
 import { extensionAction } from '../extensions.js';
 import { validAction, actionLabel } from './metadata.js';
+export async function swapKeys(from, to, model, pageId) {
+    await updateProfile(async (p) => {
+        const target = model || 'plus';
+        const set = pageSet(p, target);
+        const current = set.items.find((page) => page.id === (pageId || set.active));
+        const mappings = deviceMapping(p, target, pageId);
+        for (const index of [from, to]) {
+            if (!Number.isInteger(index) || index < 0 || index >= mappings.keys.length) {
+                throw new Error('Control index is out of range');
+            }
+        }
+        if (from === to) {
+            return;
+        }
+        if (current?.kind === 'folder' && (from === 0 || to === 0)) {
+            throw new Error('First folder button is reserved for Back');
+        }
+        [mappings.keys[from], mappings.keys[to]] = [mappings.keys[to], mappings.keys[from]];
+    });
+}
 export async function setControl(kind, index, slot, action, model, pageId) {
     if (!(await validAction(action))) {
         throw new Error('Unsupported action: ' + action);

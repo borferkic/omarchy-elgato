@@ -23,6 +23,7 @@ Usage: bin/omarchy-elgato <command>
   Mapping and preview commands accept --page ID; default is active page
   models                       List all supported model layouts (no USB access)
   set-device-key MODEL INDEX ACTION
+  swap-device-key MODEL FROM TO  Swap or move two key slots on a page
   set-device-dial MODEL INDEX SLOT ACTION
                                Set independent mappings, including offline models
   devices                      List supported USB devices (does not open them)
