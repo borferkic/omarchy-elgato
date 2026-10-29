@@ -43,13 +43,15 @@ export async function keyArtwork(key, width, height, displayBackground = false) 
     const foreground = 'rgb(' + (key.textColor || [255, 255, 255]).join(',') + ')';
     const textOnly = mode === 'text' || mode === 'color-text';
     const source = mode === 'text' || colored ? '' : await keyIcon(key);
-    const label = mode === 'icon' || mode === 'color'
+    // An unassigned key without its own icon is left completely blank.
+    const blank = key.action === 'none' && !key.icon;
+    const label = mode === 'icon' || mode === 'color' || blank
         ? ''
         : (key.displayText ?? (key.label || (await actionLabel(key.action))));
     const stamp = source ? (await stat(source)).mtimeMs : 0;
     const digest = createHash('sha256')
         .update(JSON.stringify([
-        'display-v10',
+        'display-v11',
         font,
         background,
         foreground,
@@ -100,7 +102,7 @@ export async function keyArtwork(key, width, height, displayBackground = false) 
             args.push('(', '-background', 'none', source + '[0]');
             args.push('-background', background, '-alpha', 'remove', '-alpha', 'off', '-resize', label ? '88x88' : '112x112', ')', '-gravity', 'center', '-geometry', label ? '+0-8' : '+0+0', '-composite');
         }
-        else if (label && !key.displayMode) {
+        else if (label && !key.displayMode && !blank) {
             args.push('-fill', 'white', '-pointsize', '34', '-gravity', 'center', '-annotate', '+0-8', label.slice(0, 2).toUpperCase());
         }
         if (label) {
