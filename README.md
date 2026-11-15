@@ -108,7 +108,7 @@ This fork adds a theme-aware bar icon (it follows the Omarchy theme color) and
 hides offline devices in the device picker. To install it instead of upstream:
 
 ```bash
-omarchy plugin add https://github.com/borferkic/omarchy-elgato.git --enable
+omarchy plugin add https://github.com/borferkic/elgato-omarchy.git --enable
 ```
 
 Everything below (placement prompt, system setup, runtime install, update,
