@@ -17,7 +17,7 @@ Item {
   }
 
   IpcHandler {
-    target: "dxun-dev.omarchy-elgato.runtime"
+    target: "io.github.borferkic.omarchy-elgato.runtime"
     function retry(): void {
       if (daemon.running) {
         return;

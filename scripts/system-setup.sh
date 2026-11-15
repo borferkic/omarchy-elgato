@@ -107,7 +107,7 @@ case ${1:-} in
     write_state ready 'Requirements installed. Reconnect the Stream Deck if it is not detected.'
     complete=true
     echo 'System requirements ready. Reconnect the Stream Deck if needed.'
-    omarchy-shell dxun-dev.omarchy-elgato.runtime retry || {
+    omarchy-shell io.github.borferkic.omarchy-elgato.runtime retry || {
       echo 'Enable the plugin through Omarchy to finish runtime preparation.'
     }
     ;;

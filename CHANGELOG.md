@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.2 — borferkic fork
+
+- Plugin id renamed to `io.github.borferkic.omarchy-elgato` so the fork can be installed alongside or instead of upstream.
+
 ## 0.0.1 — Pre-release
 
 The plugin is a beta pre-release.

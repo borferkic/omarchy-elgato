@@ -148,7 +148,7 @@ test('confirmation installs missing packages, narrow USB rules, and Avahi, then 
   assert.equal((await f.state()).phase, 'ready');
   assert.match(
     await readFile(join(f.directory, 'ipc'), 'utf8'),
-    /dxun-dev.omarchy-elgato.runtime retry/,
+    /io.github.borferkic.omarchy-elgato.runtime retry/,
   );
   assert.equal(f.run('--check').status, 0);
 });

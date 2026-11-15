@@ -65,7 +65,7 @@ try {
   assert.equal(await attempts(), 1, 'failed setup must not automatically restart');
   const { stdout } = await exec(
     'qs',
-    ['ipc', '-p', shell, 'call', '--', 'dxun-dev.omarchy-elgato.runtime', 'retry'],
+    ['ipc', '-p', shell, 'call', '--', 'io.github.borferkic.omarchy-elgato.runtime', 'retry'],
     { env, timeout: 3000 },
   );
   assert.doesNotMatch(stdout, /not found|not ready/i);

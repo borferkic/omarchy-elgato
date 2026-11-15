@@ -5,7 +5,7 @@ import qs.Ui
 
 BarWidget {
   id: root
-  moduleName: "dxun-dev.omarchy-elgato"
+  moduleName: "io.github.borferkic.omarchy-elgato"
 
   function injectPanel() {
     if (!panelLoader.item) {

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "dxun-dev.omarchy-elgato",
+  "id": "io.github.borferkic.omarchy-elgato",
   "name": "Omarchy Elgato",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Jase",
   "license": "MIT",
   "description": "Configure Stream Deck keys and dials, customize displays, and control network Key Lights.",

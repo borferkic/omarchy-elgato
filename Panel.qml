@@ -7,8 +7,8 @@ import qs.Ui
 
 Panel {
   id: root
-  moduleName: "dxun-dev.omarchy-elgato"
-  ipcTarget: "dxun-dev.omarchy-elgato"
+  moduleName: "io.github.borferkic.omarchy-elgato"
+  ipcTarget: "io.github.borferkic.omarchy-elgato"
   manageIpc: false
   property var anchorItem: null
   property var hostWidget: null
@@ -871,7 +871,7 @@ Panel {
   // Backend queries and serialized save responses.
   Process {
     id: retryProc
-    command: ["omarchy-shell", "dxun-dev.omarchy-elgato.runtime", "retry"]
+    command: ["omarchy-shell", "io.github.borferkic.omarchy-elgato.runtime", "retry"]
     stderr: StdioCollector {
       onStreamFinished: {
         if (text.trim())

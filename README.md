@@ -115,7 +115,7 @@ Everything below (placement prompt, system setup, runtime install, update,
 removal) works the same. Update with:
 
 ```bash
-omarchy plugin update dxun-dev.omarchy-elgato
+omarchy plugin update io.github.borferkic.omarchy-elgato
 ```
 
 If upstream is already installed, remove it first so the plugin id does not
@@ -162,7 +162,7 @@ access and use **Retry setup**. Manual helper commands are repair tools, not
 installation prerequisites. Diagnose failures with:
 
 ```bash
-~/.config/omarchy/plugins/dxun-dev.omarchy-elgato/bin/omarchy-elgato doctor
+~/.config/omarchy/plugins/io.github.borferkic.omarchy-elgato/bin/omarchy-elgato doctor
 journalctl --user -t omarchy-shell
 ```
 
@@ -177,9 +177,9 @@ also supports `XDG_CONFIG_HOME` for that destination.
 | Purpose                               | Default location                         |
 | ------------------------------------- | ---------------------------------------- |
 | Shell enablement and bar configuration (shared) | `~/.config/omarchy/shell.json` |
-| Installed plugin | `~/.config/omarchy/plugins/dxun-dev.omarchy-elgato/` |
-| Local-install backups | `~/.local/share/omarchy-plugin-backups/dxun-dev.omarchy-elgato.backup-<timestamp>` |
-| Omarchy removal backups (non-Git installs) | `~/.config/omarchy/plugins/.dxun-dev.omarchy-elgato.bak.<timestamp>` |
+| Installed plugin | `~/.config/omarchy/plugins/io.github.borferkic.omarchy-elgato/` |
+| Local-install backups | `~/.local/share/omarchy-plugin-backups/io.github.borferkic.omarchy-elgato.backup-<timestamp>` |
+| Omarchy removal backups (non-Git installs) | `~/.config/omarchy/plugins/.io.github.borferkic.omarchy-elgato.bak.<timestamp>` |
 | Mappings and pages                    | `~/.config/omarchy-elgato/profile.json`  |
 | Custom icons                          | `~/.config/omarchy-elgato/icons/`        |
 | Action packs                          | `~/.config/omarchy-elgato/actions/`      |
@@ -232,7 +232,7 @@ system's sans-serif font. Applications and icons use XDG data directories.
 ## Update
 
 ```bash
-omarchy plugin update dxun-dev.omarchy-elgato
+omarchy plugin update io.github.borferkic.omarchy-elgato
 ```
 
 Omarchy fetches upstream and fast-forwards the installed Git checkout, validates
@@ -251,8 +251,8 @@ update that cannot fast-forward. The command follows current upstream HEAD.
 ## Disable or remove
 
 ```bash
-omarchy plugin disable dxun-dev.omarchy-elgato
-omarchy plugin remove dxun-dev.omarchy-elgato
+omarchy plugin disable io.github.borferkic.omarchy-elgato
+omarchy plugin remove io.github.borferkic.omarchy-elgato
 ```
 
 Disabling stops the daemon but retains all files. There is no project-specific
